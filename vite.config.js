@@ -7,6 +7,7 @@ export default defineConfig({
     tailwindcss(),
   ],
   build: {
+    base: "/mori/",
     outDir: "dist",
     assetsInlineLimit: 0,
     emptyOutDir: true,
