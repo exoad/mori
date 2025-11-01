@@ -8,7 +8,7 @@ import logoImg from "../assets/logo.png";
 export default function Landing() {
     const navigate = useNavigate();
     return (
-        <Scaffold>
+        <Scaffold hideHeader>
             <Column className="gap-2 text-center w-full">
                 <img src={logoImg} className="w-24 h-24 md:w-32 md:h-32" draggable={false} loading="lazy" />
                 <Serif className="font-playfair text-8xl md:text-9xl font-extrabold tracking-tight uppercase">
