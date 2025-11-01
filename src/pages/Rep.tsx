@@ -4,7 +4,7 @@ import { useLocalStorage } from "../hooks/local.ts";
 import MultiToggle from "../components/MultiToggleButton";
 import { Column } from "../components/FlexLayouter.tsx";
 import "../styles/Rep.css";
-
+import Divider from "../components/Divider";
 type ViewMode = "weeks" | "months" | "years";
 
 export default function Rep() {
@@ -62,14 +62,13 @@ export default function Rep() {
         }
     }, [birthdate, view, lifeExpectancy]);
     const cellSize = view === "weeks" ? 5 : view === "months" ? 12 : 50;
-    const cellGap = view === "weeks" ? 1 : 1.5;
     return (
         <Scaffold>
             <Column gap={8}>
-                <h1 className="text-2xl font-bold text-white">
+                <h1 className="text-6xl font-bold text-white">
                     {username
-                        ? `${username}: The Remainder of Your Life`
-                        : "The Remainder of Your Life"}
+                        ? `${username}'s Life Calendar`
+                        : "This Your is Your Life Calendar"}
                 </h1>
 
                 <div className="flex gap-2">
@@ -77,18 +76,23 @@ export default function Rep() {
                         options={["weeks", "months", "years"]}
                         value={view}
                         onChange={(v) => setView(v)}
-                        className="gap-2"
+                        className="gap-2 font-montserrat"
                     />
                 </div>
+                <Divider />
+                {!loading && (
+                    <p className="flex flex-col items-center text-center text-white text-4xl font-bold">
+                        {remaining}
+                        <span className="font-normal text-2xl">{view} left</span>
+                    </p>
+                )}
 
                 <div className="relative w-full min-h-[200px]">
-                    {/* Spinner layer */}
                     <div
-                        className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
-                            loading
-                                ? "opacity-100 pointer-events-auto translate-y-0"
-                                : "opacity-0 pointer-events-none translate-y-3"
-                        }`}
+                        className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${loading
+                            ? "opacity-100 pointer-events-auto translate-y-0"
+                            : "opacity-0 pointer-events-none translate-y-3"
+                            }`}
                     >
                         <div className="flex flex-col items-center gap-2">
                             <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -99,15 +103,14 @@ export default function Rep() {
                     </div>
 
                     <div
-                        className={`inset-0 flex items-center justify-center transition-opacity duration-500 ${
-                            loading
-                                ? "opacity-0 pointer-events-none"
-                                : "opacity-100"
-                        }`}
+                        className={`inset-0 flex items-center justify-center transition-opacity duration-500 ${loading
+                            ? "opacity-0 pointer-events-none"
+                            : "opacity-100"
+                            }`}
                     >
                         <div className="w-full">
                             <div
-                                className={`grid max-w-[90dvw] gap-${cellGap}`}
+                                className="grid max-w-[90dvw] gap-1.5"
                                 style={{
                                     gridTemplateColumns: `repeat(auto-fill, minmax(${cellSize}px, 1fr))`,
                                     gridAutoRows: `${cellSize}px`,
@@ -117,11 +120,10 @@ export default function Rep() {
                                     return (
                                         <div
                                             key={`cell-${view}-${i}`}
-                                            className={`aspect-square transition-colors duration-150 cell-animate ${
-                                                i < elapsed
-                                                    ? "bg-white/20"
-                                                    : "bg-white"
-                                            }`}
+                                            className={`aspect-square transition-colors duration-150 cell-animate ${i < elapsed
+                                                ? "bg-white/20"
+                                                : "bg-white"
+                                                }`}
                                             style={{
                                                 animationDelay: `${i * 1.15}ms`,
                                             }}
@@ -132,12 +134,6 @@ export default function Rep() {
                         </div>
                     </div>
                 </div>
-
-                {!loading && (
-                    <p className="text-white/60 text-sm">
-                        {remaining} {view} left
-                    </p>
-                )}
             </Column>
         </Scaffold>
     );
