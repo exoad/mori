@@ -7,7 +7,6 @@ export default defineConfig({
     tailwindcss(),
   ],
   build: {
-    cssMinify: 'lightningcss',
     outDir: "dist",
     assetsInlineLimit: 0,
     emptyOutDir: true,
