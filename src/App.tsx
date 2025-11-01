@@ -29,6 +29,7 @@ function AnimatedRoutes() {
             >
                 <Routes location={location}>
                     <Route path="/" element={<Landing />} />
+                    <Route path="/mori" element={<Landing />} /> {/*specifically for github pages*/}
                     <Route path="/setup" element={<Setup />} />
                     <Route path="/rep" element={<Rep />} />
                     <Route path="*" element={<NotFound />} />
