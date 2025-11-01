@@ -1,0 +1,58 @@
+@import url("./assets/fonts/fonts.css");
+@import "tailwindcss";
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+
+body {
+    font-family: "Playfair Display", serif;
+    background: #000;
+    color: #fff;
+}
+
+.font-montserrat {
+    font-family: "Montserrat", sans-serif !important;
+}
+
+.font-playfair {
+    font-family: "Playfair Display", serif !important;
+}
+
+
+
+#lcp-image-container {
+    background-color: #000;
+    contain: paint;
+}
+
+#lcp-image {
+    width: 144px;
+    height: 144px;
+    object-fit: contain;
+    contain: layout;
+}
+
+@supports selector(::-webkit-scrollbar) {
+    *::-webkit-scrollbar {
+        width: 0.36em;
+    }
+
+    *::-webkit-scrollbar-track {
+        background: black;
+        border-left: 1px solid #333333;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background-color: white;
+    }
+}
+
+@supports (scrollbar-color: auto) and (not selector(::-webkit-scrollbar)) {
+    * {
+        scrollbar-width: auto;
+        scrollbar-color: white transparent;
+    }
+}
