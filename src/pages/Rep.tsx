@@ -6,6 +6,7 @@ import { Column } from "../components/FlexLayouter.tsx";
 import "../styles/Rep.css";
 import Divider from "../components/Divider";
 import { mortalityStats } from "../chronos.ts";
+import { expectations } from "../expectations.ts";
 export default function Rep() {
     const [username] = useLocalStorage("username", "");
     const [birthdate] = useLocalStorage("birthdate", "");
@@ -104,9 +105,8 @@ export default function Rep() {
         total > 0
             ? Math.max(0, Math.min(100, Math.round((elapsed / total) * 100)))
             : 0;
-
     const [winWidth, setWinWidth] = useState<number>(
-        typeof window !== "undefined" ? window.innerWidth : 1024
+        globalThis.window === undefined ? 1024 : window.innerWidth
     );
     useEffect(() => {
         const onResize = () => setWinWidth(window.innerWidth);
@@ -161,7 +161,9 @@ export default function Rep() {
                     <div className="w-full flex flex-col gap-4">
                         <div className="text-center">
                             <Column mainAxisAlignment="start">
-                                {view !== "countdown" ? (
+                                {view === "countdown" ? (
+                                    <></>
+                                ) : (
                                     <>
                                         <div className="mt-1 flex items-end justify-center sm:justify-start gap-3">
                                             <div className="text-5xl font-playfair font-bold text-white leading-none">
@@ -181,17 +183,21 @@ export default function Rep() {
                                             </time>
                                         </div>
                                     </>
-                                ) : (
-                                    <></>
                                 )}
                             </Column>
-                            <div className="mt-3">
-                                <div className="h-3 bg-white/10">
+                            <div className="py-10 flame-container">
+                                <div className="h-3 bg-white/10 flame-track">
                                     <div
-                                        aria-hidden
-                                        className={`h-full bg-gradient-to-r from-rose-800 via-amber-400 to-amber-100`}
+                                        className="flame-wrapper"
                                         style={{ width: `${percent}%` }}
-                                    />
+                                    >
+                                        <div
+                                            aria-hidden
+                                            className="flame-bar bg-gradient-to-r from-[#0A0403] via-[#3A1E1E] to-amber-500 shadow-inner shadow-black/50"
+                                        />
+                                        <div className="flame-tip" />
+                                        <div className="embers" />
+                                    </div>
                                 </div>
                                 <div className="mt-1 text-sm italic text-white/70">
                                     {percent}% of the way there
@@ -282,21 +288,40 @@ export function CountdownProgress({
             setSecondsLeft((deathDate.getTime() - now.getTime()) / 1000);
         };
         tick();
-        const id = setInterval(tick, 1000);
-        return () => clearInterval(id);
+        return () => clearInterval(setInterval(tick, 1000));
     }, [deathDate]);
+    const total = Math.max(0, secondsLeft);
+    const seconds = Math.floor(total % 60);
+    const two = (n: number) => String(n).padStart(2, "0");
+
     return (
-        <div className="flex flex-col gap-4 w-full text-center text-4xl md:text-6xl lg:text-8xl font-mono font-bold text-white">
-            {(() => {
-                const total = Math.floor(Math.max(0, secondsLeft));
-                const two = (n: number) => String(n).padStart(2, "0");
-                return `${Math.floor(total / 3600)}:${two(
-                    Math.floor((total % 3600) / 60)
-                )}:${two(total % 60)}`;
-            })()}
-            <div className="text-white/70 text-base md:text-sm italic font-normal font-montserrat">
-                Tick Tock...
+        <div className="flex flex-col gap-10 w-full text-center text-white">
+            <div className="text-4xl md:text-6xl lg:text-8xl font-mono font-bold">
+                {Math.floor(total / 3600)}:
+                {two(Math.floor((total % 3600) / 60))}:{two(seconds)}
             </div>
+            <div className="text-white/70 text-lg font-normal font-montserrat">
+                That Is:
+            </div>
+            <Column className="text-center space-y-10 font-mono text-lg md:text-xl">
+                {expectations.map((m) => {
+                    const value = (m.calc?.(total) ??
+                        (m.check?.(deathDate) ? "Yes" : "No"))!!;
+                    return (
+                        <Column key={m.label}>
+                            <span className="text-2xl">
+                                {value.toLocaleString()}
+                            </span>
+                            <span className="font-playfair font-semibold ml-2 text-white/70">
+                                {m.label}
+                            </span>
+                            <div className="text-white/50 text-sm">
+                                {m.comment}
+                            </div>
+                        </Column>
+                    );
+                })}
+            </Column>
         </div>
     );
 }

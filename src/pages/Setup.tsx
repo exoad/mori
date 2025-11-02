@@ -70,13 +70,12 @@ export default function Setup() {
                             </span>
                         ) : null}
                     </label>
-
-                    <label className="flex flex-col text-white text-lg">
+                    <label className="flex flex-col items-start text-white text-lg">
                         <Serif className="font-bold">Gender</Serif>
                         <div className="mt-3">
                             <MultiToggle
                                 options={["Male", "Female"]}
-                                value={(gender as "Male" | "Female") ?? null}
+                                value={(gender as "Male" | "Female") ?? "Male"}
                                 onChange={(v) => setGender(v)}
                                 className="gap-3"
                             />
