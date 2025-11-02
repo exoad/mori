@@ -13,7 +13,7 @@ export default function NotFound() {
                     Page not found.
                 </Sans>
                 <FatButton
-                    onPress={() => navigate("/")}
+                    onPress={() => navigate("/mori")}
                     className="mt-4 px-10 py-4"
                 >
                     Go home

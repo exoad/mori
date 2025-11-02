@@ -288,7 +288,8 @@ export function CountdownProgress({
             setSecondsLeft((deathDate.getTime() - now.getTime()) / 1000);
         };
         tick();
-        return () => clearInterval(setInterval(tick, 1000));
+        const t = setInterval(tick, 1000);
+        return () => clearInterval(t);
     }, [deathDate]);
     const total = Math.max(0, secondsLeft);
     const seconds = Math.floor(total % 60);
@@ -328,20 +329,33 @@ export function CountdownProgress({
 
 export function DailyProgress() {
     const [remainingPercent, setRemainingPercent] = useState(0);
+    // i love working with time, especially when u forget daylight savings exists
+    //
+    // W inventions
     const calculateRemainingPercent = () => {
         const now = new Date();
+        const endOfDay = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate() + 1,
+            0,
+            0,
+            0,
+            0
+        );
+        const msRemaining = endOfDay.getTime() - now.getTime();
         return (
-            ((new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate() + 1,
-                0,
-                0,
-                0,
-                0
-            ).getTime() -
-                now.getTime()) /
-                86400000) *
+            (msRemaining /
+                (endOfDay.getTime() -
+                    new Date(
+                        now.getFullYear(),
+                        now.getMonth(),
+                        now.getDate(),
+                        0,
+                        0,
+                        0,
+                        0
+                    ).getTime())) *
             100
         );
     };
@@ -352,7 +366,6 @@ export function DailyProgress() {
         }, 1000);
         return () => clearInterval(fx);
     }, []);
-
     return (
         <div className="w-full max-w-2xl mx-auto">
             <div className="flex justify-between items-center mb-2 text-sm font-medium text-white/80">
@@ -363,7 +376,7 @@ export function DailyProgress() {
             </div>
             <div className="w-full h-10 overflow-hidden bg-white/10">
                 <div
-                    className="h-full bg-white transition-all duration-1500 linear"
+                    className="h-full bg-white transition-all duration-1000 linear"
                     style={{
                         width: `${remainingPercent}%`,
                     }}

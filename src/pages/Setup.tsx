@@ -100,7 +100,7 @@ export default function Setup() {
                                 return Object.keys(next).length === 0;
                             })()
                         ) {
-                            navigate("/rep");
+                            navigate("/mori/rep");
                         }
                     }}
                 >
