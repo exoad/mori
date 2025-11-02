@@ -14,9 +14,11 @@ const e=new Date(n),t=new Date,a=new Date(e)
 if(a.setFullYear(e.getFullYear()+u),"weeks"===i){const s=Math.floor((a.getTime()-e.getTime())/6048e5),l=Math.floor((t.getTime()-e.getTime())/6048e5)
 return{total:s,elapsed:l,remaining:s-l,deathDate:a}}if("days"===i){const s=Math.floor((a.getTime()-e.getTime())/864e5),l=Math.floor((t.getTime()-e.getTime())/864e5)
 return{total:s,elapsed:l,remaining:s-l,deathDate:a}}if("countdown"===i){const s=Math.floor((a.getTime()-e.getTime())/1e3),l=Math.floor((t.getTime()-e.getTime())/1e3)
-return{total:s,elapsed:l,remaining:s-l,deathDate:a}}if("months"===i){const s=12*u,l=12*(t.getFullYear()-e.getFullYear())+(t.getMonth()-e.getMonth())
-return{total:s,elapsed:l,remaining:s-l,deathDate:a}}{const s=u,l=t.getFullYear()-e.getFullYear()
-return{total:s,elapsed:l,remaining:s-l,deathDate:a}}},[n,i,u]),N="weeks"===i?5:"months"===i?12:50,y=f>0?Math.max(0,Math.min(100,Math.round(w/f*100))):0,[v,M]=a.useState(void 0===globalThis.window?1024:window.innerWidth)
+return{total:s,elapsed:l,remaining:s-l,deathDate:a}}if("months"===i){const s=12*u
+let l=12*(t.getFullYear()-e.getFullYear())
+return l-=e.getMonth(),l+=t.getMonth(),t.getDate()<e.getDate()&&l--,{total:s,elapsed:l,remaining:s-l,deathDate:a}}{const s=u
+let l=t.getFullYear()-e.getFullYear()
+return(t.getMonth()<e.getMonth()||t.getMonth()===e.getMonth()&&t.getDate()<e.getDate())&&l--,{total:s,elapsed:l,remaining:s-l,deathDate:a}}},[n,i,u]),N="weeks"===i?5:"months"===i?12:50,y=f>0?Math.max(0,Math.min(100,Math.round(w/f*100))):0,[v,M]=a.useState(void 0===globalThis.window?1024:window.innerWidth)
 a.useEffect(()=>{const e=()=>M(window.innerWidth)
 return window.addEventListener("resize",e),()=>window.removeEventListener("resize",e)},[])
 const T=a.useMemo(()=>420>v?"weeks"===i?4:"months"===i?8:N:640>v?"weeks"===i?5:"months"===i?10:N:N,[v,i,N]),D="weeks"===i||"months"===i?T:N
@@ -30,9 +32,11 @@ return()=>clearInterval(a)},[e])
 const r=Math.max(0,s),i=Math.floor(r%60),o=e=>(e+"").padStart(2,"0")
 return t.jsxs("div",{className:"flex flex-col gap-10 w-full text-center text-white",children:[t.jsxs("div",{className:"text-4xl md:text-6xl lg:text-8xl font-mono font-bold",children:[Math.floor(r/3600),":",o(Math.floor(r%3600/60)),":",o(i)]}),t.jsx("div",{className:"text-white/70 text-lg font-normal font-montserrat",children:"That Is:"}),t.jsx(l,{className:"text-center space-y-10 font-mono text-lg md:text-xl",children:u.map(a=>{var s,n
 const i=(null==(s=a.calc)?void 0:s.call(a,r))??((null==(n=a.check)?void 0:n.call(a,e))?"Yes":"No")
-return t.jsxs(l,{children:[t.jsx("span",{className:"text-2xl",children:i.toLocaleString()}),t.jsx("span",{className:"font-playfair font-semibold ml-2 text-white/70",children:a.label}),t.jsx("div",{className:"text-white/50 text-sm",children:a.comment})]},a.label)})})]})}function p(){const[e,s]=a.useState(0),l=()=>{const e=new Date,t=new Date(e.getFullYear(),e.getMonth(),e.getDate()+1,0,0,0,0)
-return(t.getTime()-e.getTime())/(t.getTime()-new Date(e.getFullYear(),e.getMonth(),e.getDate(),0,0,0,0).getTime())*100}
-return a.useEffect(()=>{s(l())
-const e=setInterval(()=>{s(l())},1e3)
-return()=>clearInterval(e)},[]),t.jsxs("div",{className:"w-full max-w-2xl mx-auto",children:[t.jsxs("div",{className:"flex justify-between items-center mb-2 text-sm font-medium text-white/80",children:[t.jsx("span",{className:"text-lg",children:"Today"}),t.jsxs("span",{className:"font-montserrat text-md",children:[e.toFixed(6),"% remaining"]})]}),t.jsx("div",{className:"w-full h-10 overflow-hidden bg-white/10",children:t.jsx("div",{className:"h-full bg-white transition-all duration-1000 linear",style:{width:e+"%"}})}),t.jsxs("div",{className:"text-sm text-white/50 text-left mt-1",children:["Day ends in ",(.24*e).toFixed(2)," hours"]})]})}function w(){const a=e()
+return t.jsxs(l,{children:[t.jsx("span",{className:"text-2xl",children:i.toLocaleString()}),t.jsx("span",{className:"font-playfair font-semibold ml-2 text-white/70",children:a.label}),t.jsx("div",{className:"text-white/50 text-sm",children:a.comment})]},a.label)})})]})}function p(){const[e,s]=a.useState(0),[l,n]=a.useState(864e5),r=()=>{const e=new Date,t=new Date(e.getFullYear(),e.getMonth(),e.getDate(),0,0,0,0),a=new Date(e.getFullYear(),e.getMonth(),e.getDate()+1,0,0,0,0),l=a.getTime()-t.getTime(),r=a.getTime()-e.getTime()
+n(l),s(r/l*100)}
+a.useEffect(()=>{r()
+const e=setInterval(r,1e3)
+return()=>clearInterval(e)},[])
+const i=l/36e5
+return t.jsxs("div",{className:"w-full max-w-2xl mx-auto",children:[t.jsxs("div",{className:"flex justify-between items-center mb-2 text-sm font-medium text-white/80",children:[t.jsx("span",{className:"text-lg",children:"Today"}),t.jsxs("span",{className:"font-montserrat text-md",children:[e.toFixed(6),"% remaining"]})]}),t.jsx("div",{className:"w-full h-10 overflow-hidden bg-white/10",children:t.jsx("div",{className:"h-full bg-white transition-all duration-1000 linear",style:{width:e+"%"}})}),t.jsxs("div",{className:"text-sm text-white/50 text-left mt-1",children:["Day ends in"," ",(e*(i/100)).toFixed(2)," hours"]})]})}function w(){const a=e()
 return t.jsx("div",{className:"bg-black min-h-screen flex items-center justify-center px-4 sm:px-8 md:px-16",children:t.jsxs(l,{className:"gap-6 text-center",children:[t.jsx(r,{className:"font-playfair text-6xl font-bold",children:"404"}),t.jsx(i,{className:"text-white/70 md:text-xl",children:"Page not found."}),t.jsx(o,{onPress:()=>a("/mori"),className:"mt-4 px-10 py-4",children:"Go home"})]})})}export{d as L,w as N,f as R,h as S}

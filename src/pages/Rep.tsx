@@ -80,9 +80,12 @@ export default function Rep() {
             };
         } else if (view === "months") {
             const totalMonths = lifeExpectancy * 12;
-            const elapsedMonths =
-                (now.getFullYear() - birth.getFullYear()) * 12 +
-                (now.getMonth() - birth.getMonth());
+            let elapsedMonths = (now.getFullYear() - birth.getFullYear()) * 12;
+            elapsedMonths -= birth.getMonth();
+            elapsedMonths += now.getMonth();
+            if (now.getDate() < birth.getDate()) {
+                elapsedMonths--;
+            }
             return {
                 total: totalMonths,
                 elapsed: elapsedMonths,
@@ -91,7 +94,14 @@ export default function Rep() {
             };
         } else {
             const totalYears = lifeExpectancy;
-            const elapsedYears = now.getFullYear() - birth.getFullYear();
+            let elapsedYears = now.getFullYear() - birth.getFullYear();
+            if (
+                now.getMonth() < birth.getMonth() ||
+                (now.getMonth() === birth.getMonth() &&
+                    now.getDate() < birth.getDate())
+            ) {
+                elapsedYears--;
+            }
             return {
                 total: totalYears,
                 elapsed: elapsedYears,
@@ -329,11 +339,18 @@ export function CountdownProgress({
 
 export function DailyProgress() {
     const [remainingPercent, setRemainingPercent] = useState(0);
-    // i love working with time, especially when u forget daylight savings exists
-    //
-    // W inventions
-    const calculateRemainingPercent = () => {
+    const [totalMsInDay, setTotalMsInDay] = useState(86400000);
+    const calculateDailyMetrics = () => {
         const now = new Date();
+        const startOfDay = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            0,
+            0,
+            0,
+            0
+        );
         const endOfDay = new Date(
             now.getFullYear(),
             now.getMonth(),
@@ -343,29 +360,17 @@ export function DailyProgress() {
             0,
             0
         );
+        const totalMs = endOfDay.getTime() - startOfDay.getTime();
         const msRemaining = endOfDay.getTime() - now.getTime();
-        return (
-            (msRemaining /
-                (endOfDay.getTime() -
-                    new Date(
-                        now.getFullYear(),
-                        now.getMonth(),
-                        now.getDate(),
-                        0,
-                        0,
-                        0,
-                        0
-                    ).getTime())) *
-            100
-        );
+        setTotalMsInDay(totalMs);
+        setRemainingPercent((msRemaining / totalMs) * 100);
     };
     useEffect(() => {
-        setRemainingPercent(calculateRemainingPercent());
-        const fx = setInterval(() => {
-            setRemainingPercent(calculateRemainingPercent());
-        }, 1000);
+        calculateDailyMetrics();
+        const fx = setInterval(calculateDailyMetrics, 1000);
         return () => clearInterval(fx);
     }, []);
+    const totalHoursInDay = totalMsInDay / 3600000;
     return (
         <div className="w-full max-w-2xl mx-auto">
             <div className="flex justify-between items-center mb-2 text-sm font-medium text-white/80">
@@ -383,7 +388,8 @@ export function DailyProgress() {
                 />
             </div>
             <div className="text-sm text-white/50 text-left mt-1">
-                Day ends in {(remainingPercent * 0.24).toFixed(2)} hours
+                Day ends in{" "}
+                {(remainingPercent * (totalHoursInDay / 100)).toFixed(2)} hours
             </div>
         </div>
     );
