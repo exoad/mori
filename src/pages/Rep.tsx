@@ -104,16 +104,36 @@ export default function Rep() {
         total > 0
             ? Math.max(0, Math.min(100, Math.round((elapsed / total) * 100)))
             : 0;
+
+    const [winWidth, setWinWidth] = useState<number>(
+        typeof window !== "undefined" ? window.innerWidth : 1024
+    );
+    useEffect(() => {
+        const onResize = () => setWinWidth(window.innerWidth);
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    const effectiveCellSize = useMemo(() => {
+        if (winWidth < 420)
+            return view === "weeks" ? 4 : view === "months" ? 8 : cellSize;
+        if (winWidth < 640)
+            return view === "weeks" ? 5 : view === "months" ? 10 : cellSize;
+        return cellSize;
+    }, [winWidth, view, cellSize]);
+
+    const sizeForGrid =
+        view === "weeks" || view === "months" ? effectiveCellSize : cellSize;
     return (
         <Scaffold>
-            <Column gap={8} className="py-16 px-6 md:px-0 md:py-0">
-                <h1 className="text-6xl font-bold text-white text-center">
+            <Column gap={8} className="mb-10">
+                <h1 className="text-4xl md:text-6xl font-bold text-white text-center">
                     {username
                         ? `${username}'s Life Calendar`
                         : "This Your is Your Life Calendar"}
                 </h1>
                 <Column className="text-white/70 text-center">
-                    <span className="text-base">
+                    <span className="md:text-base text-sm">
                         {gender === "Male"
                             ? `As a male, you are statistically expected to live for ${mortalityStats.male} years.`
                             : `As a female, you typically live around ${mortalityStats.female} years.`}{" "}
@@ -122,7 +142,7 @@ export default function Rep() {
                         (Source: {mortalityStats.source})
                     </span>
                 </Column>
-                <div className="flex gap-2">
+                <div className="w-full">
                     <MultiToggle
                         options={[
                             "countdown",
@@ -133,13 +153,13 @@ export default function Rep() {
                         ]}
                         value={view}
                         onChange={(v) => setView(v)}
-                        className="gap-2 font-montserrat"
+                        className="font-montserrat"
                     />
                 </div>
                 <Divider />
                 {!loading && (
-                    <div className="w-full max-w-2xl mx-auto flex flex-col sm:flex-row items-center gap-4">
-                        <div className="flex-1 text-center sm:text-left">
+                    <div className="w-full flex flex-col gap-4">
+                        <div className="text-center">
                             <Column mainAxisAlignment="start">
                                 {view !== "countdown" ? (
                                     <>
@@ -166,7 +186,7 @@ export default function Rep() {
                                 )}
                             </Column>
                             <div className="mt-3">
-                                <div className="h-3 bg-white/10 overflow-hidden">
+                                <div className="h-3 bg-white/10">
                                     <div
                                         aria-hidden
                                         className={`h-full bg-gradient-to-r from-rose-800 via-amber-400 to-amber-100`}
@@ -210,8 +230,8 @@ export default function Rep() {
                                 <div
                                     className="grid max-w-[90dvw] gap-1.5"
                                     style={{
-                                        gridTemplateColumns: `repeat(auto-fill, minmax(${cellSize}px, 1fr))`,
-                                        gridAutoRows: `${cellSize}px`,
+                                        gridTemplateColumns: `repeat(auto-fill, minmax(${sizeForGrid}px, 1fr))`,
+                                        gridAutoRows: `${sizeForGrid}px`,
                                     }}
                                 >
                                     {Array.from({ length: total }).map(
@@ -266,7 +286,7 @@ export function CountdownProgress({
         return () => clearInterval(id);
     }, [deathDate]);
     return (
-        <div className="flex flex-col gap-4 w-full max-w-2xl mx-auto text-center text-8xl font-mono font-bold text-white">
+        <div className="flex flex-col gap-4 w-full text-center text-4xl md:text-6xl lg:text-8xl font-mono font-bold text-white">
             {(() => {
                 const total = Math.floor(Math.max(0, secondsLeft));
                 const two = (n: number) => String(n).padStart(2, "0");
@@ -274,7 +294,7 @@ export function CountdownProgress({
                     Math.floor((total % 3600) / 60)
                 )}:${two(total % 60)}`;
             })()}
-            <div className="text-white/70 text-sm italic font-normal font-montserrat">
+            <div className="text-white/70 text-base md:text-sm italic font-normal font-montserrat">
                 Tick Tock...
             </div>
         </div>

@@ -12,7 +12,9 @@ export default function MultiToggle<T extends string>({
     className = "",
 }: Readonly<MultiToggleProps<T>>) {
     return (
-        <div className={`flex items-center ${className}`}>
+        <div
+            className={`flex flex-wrap items-center justify-center gap-2 max-w-full ${className}`}
+        >
             {options.map((opt) => {
                 const selected = value === opt;
                 return (
@@ -21,7 +23,11 @@ export default function MultiToggle<T extends string>({
                         type="button"
                         aria-pressed={selected}
                         onClick={() => onChange(opt)}
-                        className={`px-4 py-2 text-sm font-semibold transition-colors duration-150 border ${selected ? "bg-white text-black" : "bg-transparent text-white border-none"}`}
+                        className={`px-3 py-2 text-sm font-semibold transition-colors duration-150 whitespace-nowrap ${
+                            selected
+                                ? "bg-white text-black"
+                                : "bg-transparent text-white border-none"
+                        }`}
                     >
                         {opt}
                     </button>

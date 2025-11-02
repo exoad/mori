@@ -17,7 +17,7 @@ function AnimatedRoutes() {
         const raf = requestAnimationFrame(() => setEnter(true));
         return () => cancelAnimationFrame(raf);
     }, [location.pathname]);
-    return (
+        return (
         <div className="relative w-full min-h-screen overflow-hidden">
             <div
                 key={renderKey}
