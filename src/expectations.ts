@@ -20,6 +20,11 @@ export const expectations: {
             comment: "assuming ~29.53 days per lunar cycle",
         },
         {
+            label: "⚽ Will you see the 50th FIFA World Cup?",
+            comment: "Expected in 2050.",
+            check: (d) => d.getFullYear() >= 2050,
+        },
+        {
             label: "😴 hours of sleep left",
             calc: (s) => Math.floor((s / 86400) * 8),
             comment: "assuming 8 hours of sleep per day",
@@ -30,6 +35,16 @@ export const expectations: {
             comment: "assuming ~5 liters per minute",
         },
         {
+            label: "🌌 Will you see the next perihelion of Halley's Comet after 2061?",
+            comment: "Expected again in 2134.",
+            check: (d) => d.getFullYear() > 2134,
+        },
+        {
+            label: "🎶 Will you live to see the 100th Grammy Awards?",
+            comment: "Expected in 2058.",
+            check: (d) => d.getFullYear() >= 2058,
+        },
+        {
             label: "☄️ Will you be here for the return of Halley's Comet?",
             comment: "Expected in July 2061.",
             check: (d) => d.getFullYear() > 2061,
@@ -38,6 +53,11 @@ export const expectations: {
             label: "🔮 Will you live to see the turn of the next century?",
             comment: "On January 1, 2100.",
             check: (d) => d.getFullYear() >= 2100,
+        },
+        {
+            label: "🌐 Will you see the world population hit 10 billion?",
+            comment: "Projected around 2065.",
+            check: (d) => d.getFullYear() >= 2065,
         },
         {
             label: "🥳 weekends left",
@@ -70,6 +90,11 @@ export const expectations: {
             comment: "1 sunrise per day",
         },
         {
+            label: "🚀 Will you see the first human land on Mars?",
+            comment: "NASA and SpaceX target mid-21st century.",
+            check: (d) => d.getFullYear() >= 2050,
+        },
+        {
             label: "💓 heartbeats left",
             calc: (s) => Math.floor((s / 60) * 70),
             comment: "assuming ~70 beats per minute",
@@ -82,7 +107,7 @@ export const expectations: {
         },
         {
             label: "👀 blinks left",
-            calc: (s) => Math.floor((s / 60) * 900),
+            calc: (s) => Math.floor((s / 60) * 15),
             comment: "assuming ~15 blinks per minute",
         },
     ];

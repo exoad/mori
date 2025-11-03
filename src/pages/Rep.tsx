@@ -13,7 +13,7 @@ export default function Rep() {
     const [gender] = useLocalStorage("gender", "");
     const [view, setView] = useState<
         "weeks" | "months" | "years" | "days" | "countdown"
-    >("years");
+    >("countdown");
     const [loading, setLoading] = useState(false);
     useEffect(() => {
         setLoading(true);
@@ -318,14 +318,29 @@ export function CountdownProgress({
                 {expectations.map((m) => {
                     const value = (m.calc?.(total) ??
                         (m.check?.(deathDate) ? "Yes" : "No"))!!;
+                    const answer = (
+                        <span className="text-2xl">
+                            {value.toLocaleString()}
+                        </span>
+                    );
+                    const label = (
+                        <span className="font-playfair font-semibold ml-2 text-white/70">
+                            {m.label}
+                        </span>
+                    );
                     return (
                         <Column key={m.label}>
-                            <span className="text-2xl">
-                                {value.toLocaleString()}
-                            </span>
-                            <span className="font-playfair font-semibold ml-2 text-white/70">
-                                {m.label}
-                            </span>
+                            {m.calc ? (
+                                <>
+                                    {answer}
+                                    {label}
+                                </>
+                            ) : (
+                                <>
+                                    {label}
+                                    {answer}
+                                </>
+                            )}
                             <div className="text-white/50 text-sm">
                                 {m.comment}
                             </div>
