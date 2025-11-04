@@ -20,11 +20,6 @@ export const expectations: {
             comment: "assuming ~29.53 days per lunar cycle",
         },
         {
-            label: "⚽ Will you see the 50th FIFA World Cup?",
-            comment: "Expected in 2050.",
-            check: (d) => d.getFullYear() >= 2050,
-        },
-        {
             label: "😴 hours of sleep left",
             calc: (s) => Math.floor((s / 86400) * 8),
             comment: "assuming 8 hours of sleep per day",
