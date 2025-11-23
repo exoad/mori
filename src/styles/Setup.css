@@ -1,0 +1,4 @@
+.birthdate-picker::-webkit-calendar-picker-indicator {
+    filter: invert(100%) brightness(100%);
+    cursor: pointer;
+}
