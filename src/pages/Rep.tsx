@@ -169,9 +169,9 @@ export default function Rep() {
                         <span className="text-xs md:text-sm">
                             {regionType === "world"
                                 ? (gender === "Male"
-                                    ? `Based on world average, males are statistically expected to live for ${mortalityStats.male} years.`
-                                    : `Based on world average, females typically live around ${mortalityStats.female} years.`)
-                                : `In ${country}, life expectancy is approximately ${lifeExpectancy} years.`}
+                                    ? `Based on world average, as a male, you are statistically expected to live for ${mortalityStats.male} years.`
+                                    : `Based on world average, as a female, you are statistically expected to live for ${mortalityStats.female} years.`)
+                                : `As a ${gender}, in ${country}, you are statistically expected to live for ${lifeExpectancy} years.`}
                         </span>
                         <span className="italic text-[10px] md:text-xs text-white/40">
                             (Source: World Health Organization, 2021)
