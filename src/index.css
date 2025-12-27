@@ -56,3 +56,129 @@ body {
         scrollbar-color: white transparent;
     }
 }
+
+/* ripple / fade-in for cells */
+@keyframes cellRipple {
+  0% {
+    transform: translateY(6px) scaleY(0.98);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(0) scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 1;
+  }
+}
+
+.cell-animate {
+  animation-name: cellRipple;
+  animation-duration: 420ms;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(.2,.8,.2,1);
+}
+
+/* Accessibility mode: brighter colors for better visibility */
+
+/* Text opacity overrides */
+.accessibility-mode .text-white\/10 {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.accessibility-mode .text-white\/20 {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.accessibility-mode .text-white\/30 {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.accessibility-mode .text-white\/40 {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.accessibility-mode .text-white\/50 {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.accessibility-mode .text-white\/60 {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.accessibility-mode .text-white\/70 {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.accessibility-mode .text-white\/80 {
+  color: rgba(255, 255, 255, 0.98);
+}
+
+/* Background opacity overrides */
+.accessibility-mode .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.accessibility-mode .bg-white\/20 {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.accessibility-mode .bg-white\/30 {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Border opacity overrides */
+.accessibility-mode .border-white\/30 {
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.accessibility-mode .border-white\/40 {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.accessibility-mode .border-white\/70 {
+  border-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Input field enhancements */
+.accessibility-mode input[type="text"],
+.accessibility-mode input[type="date"],
+.accessibility-mode textarea {
+  border-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.accessibility-mode input[type="text"]:focus,
+.accessibility-mode input[type="date"]:focus,
+.accessibility-mode textarea:focus {
+  border-color: rgba(255, 255, 255, 1) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Checkbox enhancements */
+.accessibility-mode input[type="checkbox"] {
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.accessibility-mode input[type="checkbox"]:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Scrollbar visibility */
+.accessibility-mode *::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.accessibility-mode *::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.5);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Loading spinner visibility */
+.accessibility-mode .animate-spin {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: rgba(255, 255, 255, 1);
+}

@@ -5,27 +5,48 @@ import MultiToggle from "../components/MultiToggleButton";
 import { Column } from "../components/FlexLayouter.tsx";
 import "../styles/Rep.css";
 import Divider from "../components/Divider";
-import { mortalityStats } from "../chronos.ts";
+import { mortalityStats, getCountryLifeExpectancy } from "../chronos.ts";
 import { expectations } from "../expectations.ts";
 export default function Rep() {
     const [username] = useLocalStorage("username", "");
     const [birthdate] = useLocalStorage("birthdate", "");
     const [gender] = useLocalStorage("gender", "");
+    const [regionType] = useLocalStorage("regionType", "world");
+    const [country] = useLocalStorage("country", "");
+
     const [view, setView] = useState<
         "weeks" | "months" | "years" | "days" | "countdown"
     >("countdown");
     const [loading, setLoading] = useState(false);
     useEffect(() => {
         setLoading(true);
-        const timer = setTimeout(() => setLoading(false), 300);
+        const timer = setTimeout(() => setLoading(false), 600);
         return () => clearTimeout(timer);
     }, [view]);
-    const lifeExpectancy =
-        gender === "Male"
-            ? mortalityStats.male
-            : gender === "Female"
-            ? mortalityStats.female
-            : Math.ceil((mortalityStats.male + mortalityStats.female) / 2);
+
+    const lifeExpectancy = useMemo(() => {
+        if (regionType === "world") {
+            // Use gender-based world average
+            return gender === "Male"
+                ? mortalityStats.male
+                : gender === "Female"
+                ? mortalityStats.female
+                : Math.ceil((mortalityStats.male + mortalityStats.female) / 2);
+        } else {
+            // Use country-specific data
+            if (!country || !gender) {
+                // Fallback to global average if country or gender not selected
+                return gender === "Male"
+                    ? mortalityStats.male
+                    : gender === "Female"
+                    ? mortalityStats.female
+                    : Math.ceil((mortalityStats.male + mortalityStats.female) / 2);
+            }
+            const genderType = gender as "Male" | "Female";
+            return getCountryLifeExpectancy(country, genderType) ||
+                (gender === "Male" ? mortalityStats.male : mortalityStats.female);
+        }
+    }, [regionType, gender, country]);
     const { total, elapsed, remaining, deathDate } = useMemo(() => {
         if (!birthdate) {
             return {
@@ -135,24 +156,30 @@ export default function Rep() {
     const sizeForGrid =
         view === "weeks" || view === "months" ? effectiveCellSize : cellSize;
     return (
-        <Scaffold>
-            <Column gap={8} className="mb-10">
-                <h1 className="text-4xl md:text-6xl font-bold text-white text-center">
-                    {username
-                        ? `${username}'s Life Calendar`
-                        : "This Your is Your Life Calendar"}
-                </h1>
-                <Column className="text-white/70 text-center">
-                    <span className="md:text-base text-sm">
-                        {gender === "Male"
-                            ? `As a male, you are statistically expected to live for ${mortalityStats.male} years.`
-                            : `As a female, you typically live around ${mortalityStats.female} years.`}{" "}
-                    </span>
-                    <span className="italic text-sm">
-                        (Source: {mortalityStats.source})
-                    </span>
-                </Column>
-                <div className="w-full">
+        <Scaffold showSettings={true}>
+            <Column gap={2} className="mb-8 max-w-7xl mx-auto w-full">
+                <div className="text-center space-y-1 mb-4">
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+                        {username
+                            ? `${username}'s Life Calendar`
+                            : "This Is Your Life Calendar"}
+                    </h1>
+
+                    <Column className="text-white/60 text-center space-y-0 mt-2">
+                        <span className="text-xs md:text-sm">
+                            {regionType === "world"
+                                ? (gender === "Male"
+                                    ? `Based on world average, males are statistically expected to live for ${mortalityStats.male} years.`
+                                    : `Based on world average, females typically live around ${mortalityStats.female} years.`)
+                                : `In ${country}, life expectancy is approximately ${lifeExpectancy} years.`}
+                        </span>
+                        <span className="italic text-[10px] md:text-xs text-white/40">
+                            (Source: World Health Organization, 2021)
+                        </span>
+                    </Column>
+                </div>
+
+                <div className="w-full max-w-2xl mx-auto mb-2">
                     <MultiToggle
                         options={[
                             "countdown",
@@ -163,31 +190,36 @@ export default function Rep() {
                         ]}
                         value={view}
                         onChange={(v) => setView(v)}
-                        className="font-montserrat"
+                        className="font-montserrat scale-90"
                     />
                 </div>
-                <Divider />
-                {!loading && (
-                    <div className="w-full flex flex-col gap-4">
+
+                <Divider className="my-2" />
+
+                {/* Content Section */}
+                <div className="relative w-full">
+                    {/* Stats and Progress (Always rendered to avoid layout shift) */}
+                    <div className="w-full flex flex-col gap-4 mt-2">
                         <div className="text-center">
-                            <Column mainAxisAlignment="start">
+                            <Column mainAxisAlignment="start" className="space-y-2">
                                 {view === "countdown" ? (
                                     <></>
                                 ) : (
                                     <>
-                                        <div className="mt-1 flex items-end justify-center sm:justify-start gap-3">
-                                            <div className="text-5xl font-playfair font-bold text-white leading-none">
-                                                {remaining}
+                                        <div className="flex items-baseline justify-center gap-2 mb-2">
+                                            <div className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-white leading-none">
+                                                {remaining.toLocaleString()}
                                             </div>
-                                            <div className="text-lg text-white mb-1">
+                                            <div className="text-lg md:text-xl text-white/80 font-light pb-2">
                                                 {view} left
                                             </div>
                                         </div>
-                                        <div className="mt-2 text-md text-white/70">
+
+                                        <div className="text-sm md:text-base text-white/60 font-light">
                                             Until{" "}
                                             <time
                                                 dateTime={deathDate.toISOString()}
-                                                className="font-medium"
+                                                className="font-medium text-white/80"
                                             >
                                                 {deathDate.toLocaleDateString()}
                                             </time>
@@ -195,7 +227,8 @@ export default function Rep() {
                                     </>
                                 )}
                             </Column>
-                            <div className="py-10 flame-container">
+
+                            <div className="py-6 md:py-8 flame-container max-w-3xl mx-auto">
                                 <div className="h-3 bg-white/10 flame-track">
                                     <div
                                         className="flame-wrapper"
@@ -209,42 +242,21 @@ export default function Rep() {
                                         <div className="embers" />
                                     </div>
                                 </div>
-                                <div className="mt-1 text-sm italic text-white/70">
+                                <div className="mt-2 text-sm md:text-base italic text-white/60 font-light">
                                     {percent}% of the way there
                                 </div>
                             </div>
                         </div>
                     </div>
-                )}
 
-                <div className="relative w-full min-h-[200px]">
-                    <div
-                        className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
-                            loading
-                                ? "opacity-100 pointer-events-auto translate-y-0"
-                                : "opacity-0 pointer-events-none translate-y-3"
-                        }`}
-                    >
-                        <div className="flex flex-col items-center gap-2">
-                            <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            <span className="text-xs text-white/50">
-                                Recalculating…
-                            </span>
-                        </div>
-                    </div>
-                    {view === "months" ||
-                    view === "years" ||
-                    view === "weeks" ? (
-                        <div
-                            className={`inset-0 flex items-center justify-center transition-opacity duration-500 ${
-                                loading
-                                    ? "opacity-0 pointer-events-none"
-                                    : "opacity-100"
-                            }`}
-                        >
-                            <div className="w-full">
+                    {/* Visualization Section */}
+                    <div className="relative min-h-[200px] mt-4">
+                        {view === "months" ||
+                        view === "years" ||
+                        view === "weeks" ? (
+                            <div className="w-full px-4">
                                 <div
-                                    className="grid max-w-[90dvw] gap-1.5"
+                                    className="grid max-w-[90dvw] mx-auto gap-1.5 md:gap-2"
                                     style={{
                                         gridTemplateColumns: `repeat(auto-fill, minmax(${sizeForGrid}px, 1fr))`,
                                         gridAutoRows: `${sizeForGrid}px`,
@@ -271,14 +283,30 @@ export default function Rep() {
                                     )}
                                 </div>
                             </div>
+                        ) : view === "days" ? (
+                            <DailyProgress />
+                        ) : view === "countdown" ? (
+                            <CountdownProgress deathDate={deathDate} />
+                        ) : (
+                            <></>
+                        )}
+                    </div>
+
+                    {/* Artificial Loading Overlay (Covers everything above) */}
+                    <div
+                        className={`absolute -inset-4 z-40 bg-black/60 backdrop-blur-xl flex items-center justify-center transition-all duration-300 ${
+                            loading
+                                ? "opacity-100 pointer-events-auto"
+                                : "opacity-0 pointer-events-none"
+                        }`}
+                    >
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="w-12 h-12 border-4 border-white/20 border-t-white animate-spin"></div>
+                            <span className="text-sm text-white/50 font-bold uppercase tracking-widest">
+                                Recalculating
+                            </span>
                         </div>
-                    ) : view === "days" ? (
-                        <DailyProgress />
-                    ) : view === "countdown" ? (
-                        <CountdownProgress deathDate={deathDate} />
-                    ) : (
-                        <></>
-                    )}
+                    </div>
                 </div>
             </Column>
         </Scaffold>
@@ -306,30 +334,34 @@ export function CountdownProgress({
     const two = (n: number) => String(n).padStart(2, "0");
 
     return (
-        <div className="flex flex-col gap-10 w-full text-center text-white">
-            <div className="text-4xl md:text-6xl lg:text-8xl font-mono font-bold">
+        <div className="flex flex-col gap-6 md:gap-8 w-full text-center text-white max-w-5xl mx-auto px-4">
+            <div className="text-4xl md:text-6xl lg:text-8xl font-mono font-bold tracking-tight">
                 {Math.floor(total / 3600)}:
                 {two(Math.floor((total % 3600) / 60))}:{two(seconds)}
             </div>
-            <div className="text-white/70 text-lg font-normal font-montserrat">
+
+            <div className="w-16 h-px bg-white/20 mx-auto"></div>
+
+            <div className="text-white/60 text-base md:text-lg font-normal font-montserrat uppercase tracking-wide">
                 That Is:
             </div>
-            <Column className="text-center space-y-10 font-mono text-lg md:text-xl">
+
+            <Column className="text-center space-y-6 md:space-y-8 font-mono text-base md:text-lg">
                 {expectations.map((m) => {
                     const value = (m.calc?.(total) ??
                         (m.check?.(deathDate) ? "Yes" : "No"))!!;
                     const answer = (
-                        <span className="text-2xl">
+                        <span className="text-xl md:text-2xl lg:text-3xl font-bold">
                             {value.toLocaleString()}
                         </span>
                     );
                     const label = (
-                        <span className="font-playfair font-semibold ml-2 text-white/70">
+                        <span className="font-playfair font-semibold ml-2 text-white/70 text-lg md:text-xl">
                             {m.label}
                         </span>
                     );
                     return (
-                        <Column key={m.label}>
+                        <Column key={m.label} className="space-y-1">
                             {m.calc ? (
                                 <>
                                     {answer}
@@ -341,7 +373,7 @@ export function CountdownProgress({
                                     {answer}
                                 </>
                             )}
-                            <div className="text-white/50 text-sm">
+                            <div className="text-white/40 text-[10px] md:text-xs max-w-md mx-auto leading-relaxed">
                                 {m.comment}
                             </div>
                         </Column>
@@ -387,14 +419,14 @@ export function DailyProgress() {
     }, []);
     const totalHoursInDay = totalMsInDay / 3600000;
     return (
-        <div className="w-full max-w-2xl mx-auto">
-            <div className="flex justify-between items-center mb-2 text-sm font-medium text-white/80">
-                <span className="text-lg">Today</span>
-                <span className="font-montserrat text-md">
+        <div className="w-full max-w-2xl mx-auto px-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-1 text-sm md:text-base font-medium text-white/80">
+                <span className="text-lg md:text-xl font-playfair font-bold">Today</span>
+                <span className="font-montserrat text-base md:text-lg text-white/70">
                     {remainingPercent.toFixed(6)}% remaining
                 </span>
             </div>
-            <div className="w-full h-10 overflow-hidden bg-white/10">
+            <div className="w-full h-6 md:h-10 overflow-hidden bg-white/10">
                 <div
                     className="h-full bg-white transition-all duration-1000 linear"
                     style={{
@@ -402,9 +434,11 @@ export function DailyProgress() {
                     }}
                 />
             </div>
-            <div className="text-sm text-white/50 text-left mt-1">
+            <div className="text-[10px] md:text-xs text-white/50 text-left mt-2 font-light">
                 Day ends in{" "}
-                {(remainingPercent * (totalHoursInDay / 100)).toFixed(2)} hours
+                <span className="font-medium text-white/70">
+                    {(remainingPercent * (totalHoursInDay / 100)).toFixed(2)} hours
+                </span>
             </div>
         </div>
     );

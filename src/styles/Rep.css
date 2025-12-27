@@ -27,8 +27,6 @@
 
 .flame-bar {
     height: 100%;
-    border-top-right-radius: 18px;
-    border-bottom-right-radius: 18px;
     animation: flicker 1.5s infinite ease-in-out alternate;
 }
 
